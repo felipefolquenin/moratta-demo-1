@@ -1,0 +1,2739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moratta · Gestão de Condomínios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html, body, #root { margin: 0; height: 100%; background: #F7F9FA; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #3F535C;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  #aviso-demo {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    background: #16282F; color: #fff; font-size: 12.5px; padding: 9px 16px;
+    border-radius: 999px; z-index: 200; box-shadow: 0 6px 22px rgba(22,40,47,.25);
+    display: flex; align-items: center; gap: 12px; max-width: calc(100% - 28px);
+  }
+  #aviso-demo button {
+    background: rgba(255,255,255,.16); border: none; color: #fff; cursor: pointer;
+    border-radius: 999px; width: 20px; height: 20px; line-height: 1; font-size: 12px; flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="aviso-demo">
+  <span>Ambiente de demonstração · entre com qualquer e‑mail e senha · dados fictícios</span>
+  <button onclick="this.parentNode.remove()" aria-label="Fechar aviso">✕</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script>
+const LOGO = "data:image/png;base64,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";
+// ============================================================================
+// Simulador do banco — reproduz a API do Supabase em memória, para que o
+// código do aplicativo rode sem alteração nenhuma nesta demonstração.
+// ============================================================================
+const {
+  useState,
+  useEffect,
+  useCallback,
+  useRef
+} = React;
+const novoId = () => Math.random().toString(36).slice(2, 10);
+const diaRelativo = n => {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+
+// ----- Dados de exemplo -----------------------------------------------------
+const C1 = "c-eunice",
+  C2 = "c-firenze",
+  C3 = "c-portal",
+  C4 = "c-sapphire",
+  C5 = "c-vovita";
+const BD = {
+  condominios: [{
+    id: C1,
+    nome: "Edifício Eunice Guimarães",
+    cnpj: "59.016.201/0001-20",
+    endereco: "Rua XV de Novembro, 1200",
+    bairro: "Centro",
+    unidades: 48,
+    sindico: "Marcos Pereira",
+    telefone: "(42) 99912-3456",
+    email: "sindico.eunice@email.com",
+    gestor: "Ana Paula",
+    observacoes: "Portaria 24h. Chave do barrilete na administração."
+  }, {
+    id: C2,
+    nome: "Residencial Villaggio Firenze",
+    cnpj: "21.447.883/0001-11",
+    endereco: "Av. Manoel Ribas, 340",
+    bairro: "Trianon",
+    unidades: 72,
+    sindico: "Rita Camargo",
+    telefone: "(42) 99845-7788",
+    email: "ritacamargo@email.com",
+    gestor: "Ana Paula",
+    observacoes: ""
+  }, {
+    id: C3,
+    nome: "Residencial Portal do Lago",
+    cnpj: "",
+    endereco: "Rua Rio Grande do Sul, 88",
+    bairro: "Vila Carli",
+    unidades: 36,
+    sindico: "Jorge Antunes",
+    telefone: "(42) 99701-2244",
+    email: "",
+    gestor: "Carlos",
+    observacoes: ""
+  }, {
+    id: C4,
+    nome: "Edifício Sapphire",
+    cnpj: "",
+    endereco: "Rua Saldanha Marinho, 915",
+    bairro: "Centro",
+    unidades: 24,
+    sindico: "Helena Dias",
+    telefone: "(42) 99630-1188",
+    email: "",
+    gestor: "Carlos",
+    observacoes: ""
+  }, {
+    id: C5,
+    nome: "Residencial Vó Vita",
+    cnpj: "",
+    endereco: "Rua Guaíra, 502",
+    bairro: "Batel",
+    unidades: 18,
+    sindico: "Paulo Mattos",
+    telefone: "(42) 99588-4410",
+    email: "",
+    gestor: "Ana Paula",
+    observacoes: ""
+  }],
+  obrigacoes: [{
+    id: "o1",
+    condominio_id: C1,
+    tipo: "caixa_dagua",
+    local: "Reservatório superior",
+    executado_em: diaRelativo(-200),
+    validade: diaRelativo(-18),
+    periodicidade_meses: 6,
+    fornecedor: "NORUM Engenharia",
+    custo: 440,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o2",
+    condominio_id: C2,
+    tipo: "avcb",
+    local: "",
+    executado_em: diaRelativo(-1090),
+    validade: diaRelativo(-5),
+    periodicidade_meses: 36,
+    fornecedor: "Corpo de Bombeiros — PR",
+    custo: null,
+    numero_documento: "AVCB 2023/4471",
+    observacoes: "Renovação precisa de ART do projeto."
+  }, {
+    id: "o3",
+    condominio_id: C1,
+    tipo: "potabilidade",
+    local: "",
+    executado_em: diaRelativo(-172),
+    validade: diaRelativo(10),
+    periodicidade_meses: 6,
+    fornecedor: "Laboratório Águas Claras",
+    custo: 280,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o4",
+    condominio_id: C1,
+    tipo: "extintores",
+    local: "Garagem G1",
+    executado_em: diaRelativo(-353),
+    validade: diaRelativo(12),
+    periodicidade_meses: 12,
+    fornecedor: "NORUM Engenharia",
+    custo: 880,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o5",
+    condominio_id: C3,
+    tipo: "caixa_gordura",
+    local: "Bloco A",
+    executado_em: diaRelativo(-160),
+    validade: diaRelativo(22),
+    periodicidade_meses: 6,
+    fornecedor: "NORUM Engenharia",
+    custo: 540,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o6",
+    condominio_id: C4,
+    tipo: "spda",
+    local: "Cobertura",
+    executado_em: diaRelativo(-320),
+    validade: diaRelativo(45),
+    periodicidade_meses: 12,
+    fornecedor: "Eletro Sul Laudos",
+    custo: 1200,
+    numero_documento: "LAUDO-882/2025",
+    observacoes: ""
+  }, {
+    id: "o7",
+    condominio_id: C2,
+    tipo: "dedetizacao",
+    local: "",
+    executado_em: diaRelativo(-30),
+    validade: diaRelativo(150),
+    periodicidade_meses: 6,
+    fornecedor: "Prag Control",
+    custo: 390,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o8",
+    condominio_id: C5,
+    tipo: "elevadores",
+    local: "Torre única",
+    executado_em: diaRelativo(-120),
+    validade: diaRelativo(240),
+    periodicidade_meses: 12,
+    fornecedor: "Atlas Schindler",
+    custo: null,
+    numero_documento: "RIA-2026/118",
+    observacoes: ""
+  }, {
+    id: "o9",
+    condominio_id: C2,
+    tipo: "caixa_dagua",
+    local: "Blocos A e B",
+    executado_em: diaRelativo(-95),
+    validade: diaRelativo(87),
+    periodicidade_meses: 6,
+    fornecedor: "NORUM Engenharia",
+    custo: 760,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o10",
+    condominio_id: C4,
+    tipo: "extintores",
+    local: "Hall térreo",
+    executado_em: diaRelativo(-60),
+    validade: diaRelativo(305),
+    periodicidade_meses: 12,
+    fornecedor: "NORUM Engenharia",
+    custo: 320,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o11",
+    condominio_id: C3,
+    tipo: "eletrico",
+    local: "Quadro geral",
+    executado_em: diaRelativo(-290),
+    validade: diaRelativo(75),
+    periodicidade_meses: 12,
+    fornecedor: "Eletro Sul Laudos",
+    custo: 950,
+    numero_documento: "",
+    observacoes: ""
+  }, {
+    id: "o12",
+    condominio_id: C5,
+    tipo: "gas",
+    local: "Central de gás",
+    executado_em: diaRelativo(-400),
+    validade: diaRelativo(1420),
+    periodicidade_meses: 60,
+    fornecedor: "Supergasbras",
+    custo: null,
+    numero_documento: "",
+    observacoes: ""
+  }],
+  obrigacao_historico: [],
+  documentos: [{
+    id: "d1",
+    condominio_id: C2,
+    obrigacao_id: "o2",
+    nome: "AVCB-2023-4471.pdf",
+    caminho: "exemplo/avcb.pdf",
+    tipo_arquivo: "application/pdf",
+    tamanho: 842113,
+    enviado_em: diaRelativo(-1085) + "T10:00:00Z"
+  }, {
+    id: "d2",
+    condominio_id: C1,
+    obrigacao_id: null,
+    nome: "Convenção do condomínio.pdf",
+    caminho: "exemplo/convencao.pdf",
+    tipo_arquivo: "application/pdf",
+    tamanho: 1743900,
+    enviado_em: diaRelativo(-240) + "T10:00:00Z"
+  }, {
+    id: "d3",
+    condominio_id: C4,
+    obrigacao_id: "o6",
+    nome: "Laudo SPDA 882-2025.pdf",
+    caminho: "exemplo/spda.pdf",
+    tipo_arquivo: "application/pdf",
+    tamanho: 522400,
+    enviado_em: diaRelativo(-318) + "T10:00:00Z"
+  }, {
+    id: "d4",
+    condominio_id: C1,
+    obrigacao_id: null,
+    nome: "Ata da assembleia 03-2026.pdf",
+    caminho: "exemplo/ata.pdf",
+    tipo_arquivo: "application/pdf",
+    tamanho: 410200,
+    enviado_em: diaRelativo(-95) + "T10:00:00Z"
+  }]
+};
+
+// ----- Motor de consultas ---------------------------------------------------
+function executar(e, unico) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const linhas = BD[e.tabela] || [];
+      const bate = x => e.filtros.every(([c, v]) => x[c] === v);
+      if (e.op === "select") {
+        let r = linhas.slice();
+        if (e.filtros.length) r = r.filter(bate);
+        if (e.ordem) {
+          const [col, opts] = e.ordem;
+          const asc = !opts || opts.ascending !== false;
+          r.sort((a, b) => String(a[col] ?? "").localeCompare(String(b[col] ?? "")) * (asc ? 1 : -1));
+        }
+        return resolve({
+          data: unico ? r[0] || null : r,
+          error: null
+        });
+      }
+      if (e.op === "insert") {
+        const itens = Array.isArray(e.payload) ? e.payload : [e.payload];
+        const novos = itens.map(i => ({
+          id: novoId(),
+          criado_em: new Date().toISOString(),
+          enviado_em: new Date().toISOString(),
+          registrado_em: new Date().toISOString(),
+          ...i
+        }));
+        BD[e.tabela] = linhas.concat(novos);
+        return resolve({
+          data: unico ? novos[0] : novos,
+          error: null
+        });
+      }
+      if (e.op === "update") {
+        BD[e.tabela] = linhas.map(x => bate(x) ? {
+          ...x,
+          ...e.payload
+        } : x);
+        return resolve({
+          data: null,
+          error: null
+        });
+      }
+      if (e.op === "delete") {
+        BD[e.tabela] = linhas.filter(x => !bate(x));
+        // remove vínculos órfãos, como faria o ON DELETE CASCADE
+        if (e.tabela === "condominios") {
+          const ids = e.filtros.map(([, v]) => v);
+          BD.obrigacoes = BD.obrigacoes.filter(o => !ids.includes(o.condominio_id));
+          BD.documentos = BD.documentos.filter(d => !ids.includes(d.condominio_id));
+        }
+        if (e.tabela === "obrigacoes") {
+          const ids = e.filtros.map(([, v]) => v);
+          BD.documentos = BD.documentos.filter(d => !ids.includes(d.obrigacao_id));
+        }
+        return resolve({
+          data: null,
+          error: null
+        });
+      }
+      resolve({
+        data: null,
+        error: null
+      });
+    }, 90);
+  });
+}
+function consulta(tabela, op, payload) {
+  const e = {
+    tabela,
+    op,
+    payload,
+    filtros: [],
+    ordem: null
+  };
+  const obj = {
+    select() {
+      return obj;
+    },
+    order(col, opts) {
+      e.ordem = [col, opts];
+      return executar(e);
+    },
+    eq(col, val) {
+      e.filtros.push([col, val]);
+      return executar(e);
+    },
+    single() {
+      return executar(e, true);
+    },
+    then(ok, falha) {
+      return executar(e).then(ok, falha);
+    }
+  };
+  return obj;
+}
+
+// ----- Arquivos -------------------------------------------------------------
+const ARQUIVOS = {}; // caminho -> URL temporária dos arquivos que o usuário enviar
+
+const paginaExemplo = nome => "data:text/html;charset=utf-8," + encodeURIComponent(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>${nome}</title>
+     <style>body{font-family:Arial,sans-serif;display:grid;place-items:center;height:100vh;margin:0;
+     background:#F7F9FA;color:#16282F;text-align:center}div{max-width:420px;padding:30px}
+     h1{font-size:19px;margin:0 0 10px}p{font-size:14px;color:#8498A1;line-height:1.6}</style></head>
+     <body><div><h1>${nome}</h1><p>Este é um arquivo de exemplo da demonstração.<br>
+     No sistema instalado, aqui abriria o PDF real guardado com segurança,
+     acessível apenas para quem está autenticado.</p></div></body></html>`);
+
+// ----- Cliente simulado -----------------------------------------------------
+const supabase = {
+  from: tabela => ({
+    select: cols => consulta(tabela, "select", cols),
+    insert: p => consulta(tabela, "insert", p),
+    update: p => consulta(tabela, "update", p),
+    delete: () => consulta(tabela, "delete")
+  }),
+  auth: {
+    getSession: async () => ({
+      data: {
+        session: null
+      }
+    }),
+    signInWithPassword: async () => ({
+      error: null
+    }),
+    signOut: async () => ({
+      error: null
+    })
+  },
+  storage: {
+    from: () => ({
+      upload: async (caminho, arquivo) => {
+        try {
+          ARQUIVOS[caminho] = URL.createObjectURL(arquivo);
+        } catch (err) {}
+        return {
+          error: null
+        };
+      },
+      createSignedUrl: async caminho => ({
+        data: {
+          signedUrl: ARQUIVOS[caminho] || paginaExemplo(caminho.split("/").pop())
+        },
+        error: null
+      }),
+      remove: async caminhos => {
+        (caminhos || []).forEach(c => {
+          delete ARQUIVOS[c];
+        });
+        return {
+          error: null
+        };
+      }
+    })
+  }
+};
+const supabaseConfigurado = true;
+
+// ============================================================================
+// MORATTA — Gestão de Condomínios
+// Controle de prazos das obrigações prediais e guarda dos documentos.
+// Identidade: turquesa da marca sobre base clara.
+// ============================================================================
+
+// ----- Paleta ---------------------------------------------------------------
+const TEAL = "#41A4AC";
+const TEAL_CLARO = "#55C4CD";
+const TEAL_FUNDO = "#EDF7F8";
+const TINTA = "#16282F";
+const TEXTO = "#3F535C";
+const SUAVE = "#8498A1";
+const LINHA = "#E4EAEC";
+const FUNDO = "#F7F9FA";
+const BRANCO = "#FFFFFF";
+const VERMELHO = "#C4453C";
+const AMBAR = "#C98014";
+const VERDE = "#2E9E7B";
+
+// ----- Tipos de obrigação ---------------------------------------------------
+const TIPOS = {
+  caixa_dagua: {
+    label: "Limpeza de caixa d'água",
+    meses: 6,
+    grupo: "Higienização",
+    curto: "Caixa d'água"
+  },
+  caixa_gordura: {
+    label: "Limpeza de caixa de gordura",
+    meses: 6,
+    grupo: "Higienização",
+    curto: "Caixa de gordura"
+  },
+  potabilidade: {
+    label: "Análise de potabilidade da água",
+    meses: 6,
+    grupo: "Higienização",
+    curto: "Potabilidade da água"
+  },
+  dedetizacao: {
+    label: "Dedetização / controle de pragas",
+    meses: 6,
+    grupo: "Higienização",
+    curto: "Dedetização"
+  },
+  extintores: {
+    label: "Recarga de extintores",
+    meses: 12,
+    grupo: "Combate a incêndio",
+    curto: "Extintores"
+  },
+  mangueiras: {
+    label: "Teste hidrostático de mangueiras",
+    meses: 12,
+    grupo: "Combate a incêndio",
+    curto: "Mangueiras"
+  },
+  avcb: {
+    label: "AVCB / CLCB (Corpo de Bombeiros)",
+    meses: 36,
+    grupo: "Combate a incêndio",
+    curto: "AVCB / CLCB"
+  },
+  spda: {
+    label: "Laudo SPDA (para-raios)",
+    meses: 12,
+    grupo: "Laudos técnicos",
+    curto: "SPDA (para-raios)"
+  },
+  eletrico: {
+    label: "Laudo das instalações elétricas",
+    meses: 12,
+    grupo: "Laudos técnicos",
+    curto: "Instalações elétricas"
+  },
+  elevadores: {
+    label: "Inspeção de elevadores (RIA)",
+    meses: 12,
+    grupo: "Laudos técnicos",
+    curto: "Elevadores"
+  },
+  gas: {
+    label: "Inspeção da tubulação de gás",
+    meses: 60,
+    grupo: "Laudos técnicos",
+    curto: "Tubulação de gás"
+  },
+  estrutural: {
+    label: "Inspeção predial estrutural",
+    meses: 60,
+    grupo: "Laudos técnicos",
+    curto: "Inspeção estrutural"
+  },
+  seguro: {
+    label: "Seguro predial obrigatório",
+    meses: 12,
+    grupo: "Documentos",
+    curto: "Seguro predial"
+  },
+  outro: {
+    label: "Outro",
+    meses: 12,
+    grupo: "Documentos",
+    curto: "Outros"
+  }
+};
+const GRUPOS = ["Higienização", "Combate a incêndio", "Laudos técnicos", "Documentos"];
+
+// ----- Utilidades -----------------------------------------------------------
+const hoje = () => new Date().toISOString().slice(0, 10);
+const addMeses = (d, m) => {
+  const x = new Date(d);
+  x.setMonth(x.getMonth() + m);
+  return x.toISOString().slice(0, 10);
+};
+const diasAte = d => Math.round((new Date(d) - new Date(hoje())) / 86400000);
+const fmtData = iso => iso ? iso.split("-").reverse().join("/") : "—";
+const brl = n => n == null ? "—" : Number(n).toLocaleString("pt-BR", {
+  style: "currency",
+  currency: "BRL"
+});
+const semAcento = t => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const tamanhoArquivo = b => !b ? "" : b < 1024 * 1024 ? `${Math.round(b / 1024)} KB` : `${(b / 1048576).toFixed(1)} MB`;
+const situacao = validade => {
+  const d = diasAte(validade);
+  if (d < 0) return {
+    chave: "vencido",
+    texto: `Vencido há ${Math.abs(d)} ${Math.abs(d) === 1 ? "dia" : "dias"}`,
+    cor: VERMELHO
+  };
+  if (d <= 30) return {
+    chave: "avencer",
+    texto: d === 0 ? "Vence hoje" : `Vence em ${d} ${d === 1 ? "dia" : "dias"}`,
+    cor: AMBAR
+  };
+  return {
+    chave: "emdia",
+    texto: `Em dia · ${fmtData(validade)}`,
+    cor: VERDE
+  };
+};
+
+// ----- Conversão com o banco ------------------------------------------------
+const condDeLinha = r => ({
+  id: r.id,
+  nome: r.nome,
+  cnpj: r.cnpj || "",
+  endereco: r.endereco || "",
+  bairro: r.bairro || "",
+  unidades: r.unidades || "",
+  sindico: r.sindico || "",
+  telefone: r.telefone || "",
+  email: r.email || "",
+  gestor: r.gestor || "",
+  observacoes: r.observacoes || ""
+});
+const condParaLinha = c => ({
+  nome: c.nome,
+  cnpj: c.cnpj || null,
+  endereco: c.endereco || null,
+  bairro: c.bairro || null,
+  unidades: c.unidades ? parseInt(c.unidades, 10) : null,
+  sindico: c.sindico || null,
+  telefone: c.telefone || null,
+  email: c.email || null,
+  gestor: c.gestor || null,
+  observacoes: c.observacoes || null
+});
+const obrDeLinha = r => ({
+  id: r.id,
+  condId: r.condominio_id,
+  tipo: r.tipo,
+  local: r.local || "",
+  executadoEm: r.executado_em || "",
+  validade: r.validade,
+  periodicidade: r.periodicidade_meses || null,
+  fornecedor: r.fornecedor || "",
+  custo: r.custo == null ? "" : Number(r.custo),
+  numeroDoc: r.numero_documento || "",
+  observacoes: r.observacoes || ""
+});
+const obrParaLinha = o => ({
+  condominio_id: o.condId,
+  tipo: o.tipo,
+  local: o.local || null,
+  executado_em: o.executadoEm || null,
+  validade: o.validade,
+  periodicidade_meses: o.periodicidade || TIPOS[o.tipo]?.meses || null,
+  fornecedor: o.fornecedor || null,
+  custo: o.custo === "" || o.custo == null ? null : Number(o.custo),
+  numero_documento: o.numeroDoc || null,
+  observacoes: o.observacoes || null
+});
+const docDeLinha = r => ({
+  id: r.id,
+  condId: r.condominio_id,
+  obrId: r.obrigacao_id,
+  nome: r.nome,
+  caminho: r.caminho,
+  tipoArquivo: r.tipo_arquivo || "",
+  tamanho: r.tamanho,
+  enviadoEm: r.enviado_em
+});
+async function buscarDados() {
+  const [c, o, d] = await Promise.all([supabase.from("condominios").select("*").order("nome"), supabase.from("obrigacoes").select("*").order("validade"), supabase.from("documentos").select("*").order("enviado_em", {
+    ascending: false
+  })]);
+  if (c.error) throw c.error;
+  if (o.error) throw o.error;
+  return {
+    condominios: (c.data || []).map(condDeLinha),
+    obrigacoes: (o.data || []).map(obrDeLinha),
+    documentos: d.error ? [] : (d.data || []).map(docDeLinha)
+  };
+}
+async function carregarTudo() {
+  const limite = new Promise((_, rej) => setTimeout(() => rej(new Error("Sem resposta do servidor. Verifique sua conexão.")), 15000));
+  return Promise.race([buscarDados(), limite]);
+}
+
+// ============================================================================
+// Componentes de apoio
+// ============================================================================
+function Logo({
+  altura = 30
+}) {
+  return /*#__PURE__*/React.createElement("img", {
+    src: LOGO,
+    alt: "Moratta Gestão de Condomínios",
+    style: {
+      height: altura,
+      display: "block"
+    }
+  });
+}
+function Etiqueta({
+  children,
+  cor,
+  suave
+}) {
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 600,
+      padding: "4px 10px",
+      borderRadius: 6,
+      whiteSpace: "nowrap",
+      color: suave ? cor : BRANCO,
+      background: suave ? `${cor}18` : cor,
+      border: suave ? `1px solid ${cor}33` : "none"
+    }
+  }, children);
+}
+function Situacao({
+  validade
+}) {
+  const s = situacao(validade);
+  return /*#__PURE__*/React.createElement(Etiqueta, {
+    cor: s.cor,
+    suave: true
+  }, s.texto);
+}
+function SeletorBusca({
+  valor,
+  opcoes,
+  onChange,
+  placeholder = "Selecione",
+  className,
+  estilo
+}) {
+  const [aberto, setAberto] = useState(false);
+  const [busca, setBusca] = useState("");
+  const caixa = useRef(null),
+    campo = useRef(null);
+  const selecionado = opcoes.find(o => o.id === valor);
+  const alvo = semAcento(busca.trim());
+  const lista = alvo ? opcoes.filter(o => semAcento(o.nome).includes(alvo)) : opcoes;
+  useEffect(() => {
+    if (!aberto) return;
+    const fora = e => {
+      if (caixa.current && !caixa.current.contains(e.target)) {
+        setAberto(false);
+        setBusca("");
+      }
+    };
+    document.addEventListener("mousedown", fora);
+    return () => document.removeEventListener("mousedown", fora);
+  }, [aberto]);
+  useEffect(() => {
+    if (aberto && campo.current) campo.current.focus();
+  }, [aberto]);
+  const escolher = id => {
+    onChange(id);
+    setAberto(false);
+    setBusca("");
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    ref: caixa,
+    className: className,
+    style: {
+      position: "relative",
+      ...estilo
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "sel-botao",
+    onClick: () => setAberto(!aberto)
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, selecionado ? selecionado.nome : placeholder), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: SUAVE,
+      marginLeft: 8,
+      flexShrink: 0,
+      fontSize: 11
+    }
+  }, "▼")), aberto && /*#__PURE__*/React.createElement("div", {
+    className: "sel-lista"
+  }, /*#__PURE__*/React.createElement("input", {
+    ref: campo,
+    className: "sel-busca",
+    value: busca,
+    placeholder: "Pesquisar…",
+    onChange: e => setBusca(e.target.value),
+    onKeyDown: e => {
+      if (e.key === "Escape") {
+        setAberto(false);
+        setBusca("");
+      }
+      if (e.key === "Enter" && lista.length) {
+        e.preventDefault();
+        escolher(lista[0].id);
+      }
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxHeight: 260,
+      overflowY: "auto"
+    }
+  }, lista.map(o => /*#__PURE__*/React.createElement("button", {
+    key: o.id,
+    type: "button",
+    onClick: () => escolher(o.id),
+    className: `sel-item ${o.id === valor ? "ativo" : ""}`
+  }, o.nome)), lista.length === 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px",
+      color: SUAVE,
+      fontSize: 13
+    }
+  }, "Nenhum resultado."))));
+}
+function Modal({
+  children,
+  titulo,
+  subtitulo,
+  onClose,
+  largura = 520
+}) {
+  useEffect(() => {
+    const esc = e => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, [onClose]);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "fundo-modal",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "caixa-modal",
+    style: {
+      width: largura
+    },
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "topo-modal"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+    style: {
+      margin: 0,
+      fontSize: 17,
+      color: TINTA,
+      fontWeight: 600
+    }
+  }, titulo), subtitulo && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: SUAVE,
+      marginTop: 3
+    }
+  }, subtitulo)), /*#__PURE__*/React.createElement("button", {
+    className: "fechar",
+    onClick: onClose,
+    "aria-label": "Fechar"
+  }, "✕")), /*#__PURE__*/React.createElement("div", {
+    className: "corpo-modal"
+  }, children)));
+}
+function Acoes({
+  onSave,
+  onClose,
+  rotulo = "Salvar",
+  carregando
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      marginTop: 26,
+      paddingTop: 18,
+      borderTop: `1px solid ${LINHA}`
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    onClick: onSave,
+    disabled: carregando
+  }, carregando ? "Salvando…" : rotulo), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro",
+    onClick: onClose
+  }, "Cancelar"));
+}
+const Campo = ({
+  rotulo,
+  children,
+  dica
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    marginBottom: 14
+  }
+}, /*#__PURE__*/React.createElement("label", null, rotulo), children, dica && /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 11.5,
+    color: SUAVE,
+    marginTop: 5
+  }
+}, dica));
+
+// ============================================================================
+// Aplicação
+// ============================================================================
+const NAV_TOPO = [{
+  k: "painel",
+  label: "Painel"
+}, {
+  k: "obrigacoes",
+  label: "Todas as obrigações"
+}];
+const NAV_BASE = [{
+  k: "condominios",
+  label: "Condomínios"
+}, {
+  k: "documentos",
+  label: "Documentos"
+}];
+// Cada tipo vira uma seção própria, agrupada pela categoria
+const NAV_TIPOS = GRUPOS.map(g => ({
+  grupo: g,
+  itens: Object.entries(TIPOS).filter(([, v]) => v.grupo === g).map(([k, v]) => ({
+    k: `tipo:${k}`,
+    tipo: k,
+    label: v.curto || v.label
+  }))
+}));
+const tipoDaAba = aba => aba.startsWith("tipo:") ? aba.slice(5) : null;
+const tituloDaAba = aba => {
+  const t = tipoDaAba(aba);
+  if (t) return TIPOS[t]?.label || t;
+  return [...NAV_TOPO, ...NAV_BASE].find(n => n.k === aba)?.label || "";
+};
+function App() {
+  const [db, setDb] = useState(null);
+  const [usuario, setUsuario] = useState(null);
+  const [aba, setAba] = useState("painel");
+  const [modal, setModal] = useState(null);
+  const [condAberto, setCondAberto] = useState(null);
+  const [erroBanco, setErroBanco] = useState("");
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [filtroCond, setFiltroCond] = useState("todos");
+  const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [filtroSit, setFiltroSit] = useState("todas");
+  const recarregar = useCallback(async () => {
+    try {
+      setDb(await carregarTudo());
+      setErroBanco("");
+    } catch (e) {
+      setErroBanco(e.message || "Falha ao carregar os dados.");
+    }
+  }, []);
+  useEffect(() => {
+    if (!supabaseConfigurado) return;
+    supabase.auth.getSession().then(({
+      data
+    }) => {
+      if (data.session) {
+        const email = data.session.user.email || "usuário";
+        setUsuario(email.split("@")[0].replace(/^\w/, c => c.toUpperCase()));
+        recarregar();
+      }
+    });
+  }, [recarregar]);
+  const aoEntrar = async nome => {
+    setUsuario(nome);
+    await recarregar();
+  };
+  const sair = async () => {
+    if (supabaseConfigurado) await supabase.auth.signOut();
+    setUsuario(null);
+    setDb(null);
+    setAba("painel");
+  };
+  if (!usuario) return /*#__PURE__*/React.createElement(TelaLogin, {
+    onEntrar: aoEntrar
+  });
+  if (!db) return /*#__PURE__*/React.createElement(TelaCarregando, {
+    erro: erroBanco,
+    onTentar: () => {
+      setErroBanco("");
+      recarregar();
+    }
+  });
+
+  // ----- Dados derivados -----
+  const condPorId = id => db.condominios.find(c => c.id === id);
+  const nomeCond = id => condPorId(id)?.nome || "—";
+  const docsDaObrigacao = obrId => db.documentos.filter(d => d.obrId === obrId);
+  const docsDoCondominio = condId => db.documentos.filter(d => d.condId === condId);
+  const obrigacoesDoCond = condId => db.obrigacoes.filter(o => o.condId === condId);
+  const vencidas = db.obrigacoes.filter(o => diasAte(o.validade) < 0);
+  const aVencer30 = db.obrigacoes.filter(o => {
+    const d = diasAte(o.validade);
+    return d >= 0 && d <= 30;
+  });
+  const aVencer60 = db.obrigacoes.filter(o => {
+    const d = diasAte(o.validade);
+    return d > 30 && d <= 60;
+  });
+  const pendencias = [...vencidas, ...aVencer30].sort((a, b) => a.validade.localeCompare(b.validade));
+  const condComPendencia = new Set(pendencias.map(o => o.condId));
+  const erroAlerta = e => alert("Não foi possível concluir: " + (e.message || e));
+  const irPara = chave => {
+    setAba(chave);
+    setMenuAberto(false);
+    setCondAberto(null);
+  };
+  const tipoAtual = tipoDaAba(aba);
+
+  // ----- Ações -----
+  const salvarCondominio = async c => {
+    const {
+      error
+    } = c.id ? await supabase.from("condominios").update(condParaLinha(c)).eq("id", c.id) : await supabase.from("condominios").insert(condParaLinha(c));
+    if (error) return erroAlerta(error);
+    setModal(null);
+    await recarregar();
+  };
+  const excluirCondominio = async c => {
+    if (!confirm(`Excluir ${c.nome}? Todas as obrigações e documentos vinculados também serão removidos.`)) return;
+    const {
+      error
+    } = await supabase.from("condominios").delete().eq("id", c.id);
+    if (error) return erroAlerta(error);
+    setCondAberto(null);
+    await recarregar();
+  };
+  const salvarObrigacao = async o => {
+    const linha = obrParaLinha(o);
+    const {
+      error
+    } = o.id ? await supabase.from("obrigacoes").update(linha).eq("id", o.id) : await supabase.from("obrigacoes").insert(linha);
+    if (error) return erroAlerta(error);
+    setModal(null);
+    await recarregar();
+  };
+
+  // Renovar: arquiva o registro atual no histórico e atualiza com os dados novos
+  const renovarObrigacao = async (o, dados) => {
+    if (o.executadoEm || o.validade) {
+      await supabase.from("obrigacao_historico").insert({
+        obrigacao_id: o.id,
+        executado_em: o.executadoEm || null,
+        validade: o.validade,
+        fornecedor: o.fornecedor || null,
+        custo: o.custo === "" ? null : o.custo,
+        numero_documento: o.numeroDoc || null
+      });
+    }
+    const {
+      error
+    } = await supabase.from("obrigacoes").update({
+      executado_em: dados.executadoEm,
+      validade: dados.validade,
+      fornecedor: dados.fornecedor || null,
+      custo: dados.custo === "" ? null : Number(dados.custo),
+      numero_documento: dados.numeroDoc || null
+    }).eq("id", o.id);
+    if (error) return erroAlerta(error);
+    setModal(null);
+    await recarregar();
+  };
+  const excluirObrigacao = async o => {
+    if (!confirm("Excluir esta obrigação e seu histórico?")) return;
+    const {
+      error
+    } = await supabase.from("obrigacoes").delete().eq("id", o.id);
+    if (error) return erroAlerta(error);
+    await recarregar();
+  };
+
+  // ----- Documentos -----
+  const enviarDocumento = async (arquivo, {
+    condId,
+    obrId
+  }) => {
+    if (!arquivo) return;
+    if (arquivo.size > 25 * 1024 * 1024) {
+      alert("Arquivo muito grande. O limite é 25 MB.");
+      return;
+    }
+    const limpo = arquivo.name.replace(/[^\w.\-]/g, "_");
+    const caminho = `${condId || "geral"}/${Date.now()}-${limpo}`;
+    const {
+      error: erroUp
+    } = await supabase.storage.from("documentos").upload(caminho, arquivo, {
+      upsert: false
+    });
+    if (erroUp) return erroAlerta(erroUp);
+    const {
+      error
+    } = await supabase.from("documentos").insert({
+      condominio_id: condId || null,
+      obrigacao_id: obrId || null,
+      nome: arquivo.name,
+      caminho,
+      tipo_arquivo: arquivo.type,
+      tamanho: arquivo.size
+    });
+    if (error) return erroAlerta(error);
+    await recarregar();
+  };
+  const abrirDocumento = async doc => {
+    const {
+      data,
+      error
+    } = await supabase.storage.from("documentos").createSignedUrl(doc.caminho, 3600);
+    if (error || !data?.signedUrl) return erroAlerta(error || new Error("Não foi possível abrir o arquivo."));
+    window.open(data.signedUrl, "_blank");
+  };
+  const excluirDocumento = async doc => {
+    if (!confirm(`Excluir o arquivo "${doc.nome}"?`)) return;
+    await supabase.storage.from("documentos").remove([doc.caminho]);
+    const {
+      error
+    } = await supabase.from("documentos").delete().eq("id", doc.id);
+    if (error) return erroAlerta(error);
+    await recarregar();
+  };
+
+  // ----- Filtro da aba Obrigações -----
+  let obrFiltradas = db.obrigacoes;
+  if (filtroCond !== "todos") obrFiltradas = obrFiltradas.filter(o => o.condId === filtroCond);
+  if (filtroTipo !== "todos") obrFiltradas = obrFiltradas.filter(o => o.tipo === filtroTipo);
+  if (filtroSit !== "todas") obrFiltradas = obrFiltradas.filter(o => situacao(o.validade).chave === filtroSit);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "app"
+  }, /*#__PURE__*/React.createElement(Estilos, null), menuAberto && /*#__PURE__*/React.createElement("div", {
+    className: "sombra-menu",
+    onClick: () => setMenuAberto(false)
+  }), /*#__PURE__*/React.createElement("aside", {
+    className: `lateral ${menuAberto ? "aberta" : ""}`
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "22px 20px 18px"
+    }
+  }, /*#__PURE__*/React.createElement(Logo, {
+    altura: 30
+  })), /*#__PURE__*/React.createElement("nav", {
+    style: {
+      padding: "0 12px 10px",
+      flex: 1,
+      overflowY: "auto"
+    }
+  }, NAV_TOPO.map(n => /*#__PURE__*/React.createElement("button", {
+    key: n.k,
+    className: `item-nav ${aba === n.k ? "ativo" : ""}`,
+    onClick: () => irPara(n.k)
+  }, n.label, n.k === "painel" && pendencias.length > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "contador"
+  }, pendencias.length))), NAV_TIPOS.map(({
+    grupo,
+    itens
+  }) => /*#__PURE__*/React.createElement("div", {
+    key: grupo
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "titulo-grupo"
+  }, grupo), itens.map(n => {
+    const atrasados = db.obrigacoes.filter(o => o.tipo === n.tipo && diasAte(o.validade) < 0).length;
+    return /*#__PURE__*/React.createElement("button", {
+      key: n.k,
+      className: `item-nav fino ${aba === n.k ? "ativo" : ""}`,
+      onClick: () => irPara(n.k)
+    }, n.label, atrasados > 0 && /*#__PURE__*/React.createElement("span", {
+      className: "contador"
+    }, atrasados));
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "divisor"
+  }), NAV_BASE.map(n => /*#__PURE__*/React.createElement("button", {
+    key: n.k,
+    className: `item-nav ${aba === n.k ? "ativo" : ""}`,
+    onClick: () => irPara(n.k)
+  }, n.label))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "16px 20px",
+      borderTop: `1px solid ${LINHA}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      color: TINTA
+    }
+  }, usuario), /*#__PURE__*/React.createElement("button", {
+    className: "btn-sair",
+    onClick: sair
+  }, "Encerrar sessão"))), /*#__PURE__*/React.createElement("div", {
+    className: "conteudo"
+  }, /*#__PURE__*/React.createElement("header", {
+    className: "topo"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn-menu",
+    onClick: () => setMenuAberto(true),
+    "aria-label": "Menu"
+  }, "☰"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, condAberto ? condAberto.nome : tituloDaAba(aba)), /*#__PURE__*/React.createElement("p", null, condAberto ? "Ficha do condomínio" : tipoAtual ? `Revisão a cada ${TIPOS[tipoAtual]?.meses} meses · ${TIPOS[tipoAtual]?.grupo}` : "Controle de prazos e documentos"))), /*#__PURE__*/React.createElement("main", {
+    className: "principal"
+  }, condAberto ? /*#__PURE__*/React.createElement(FichaCondominio, {
+    cond: condAberto,
+    obrigacoes: obrigacoesDoCond(condAberto.id),
+    documentos: docsDoCondominio(condAberto.id),
+    docsDaObrigacao: docsDaObrigacao,
+    onVoltar: () => setCondAberto(null),
+    onEditar: () => setModal({
+      tipo: "condominio",
+      dados: condAberto
+    }),
+    onExcluir: () => excluirCondominio(condAberto),
+    onNovaObrigacao: () => setModal({
+      tipo: "obrigacao",
+      dados: {
+        condId: condAberto.id,
+        tipo: "caixa_dagua",
+        executadoEm: hoje()
+      }
+    }),
+    onEditarObrigacao: o => setModal({
+      tipo: "obrigacao",
+      dados: o
+    }),
+    onRenovar: o => setModal({
+      tipo: "renovar",
+      dados: o
+    }),
+    onExcluirObrigacao: excluirObrigacao,
+    onEnviarDoc: (arq, obrId) => enviarDocumento(arq, {
+      condId: condAberto.id,
+      obrId
+    }),
+    onAbrirDoc: abrirDocumento,
+    onExcluirDoc: excluirDocumento
+  }) : /*#__PURE__*/React.createElement(React.Fragment, null, aba === "painel" && /*#__PURE__*/React.createElement(Painel, {
+    vencidas: vencidas,
+    aVencer30: aVencer30,
+    aVencer60: aVencer60,
+    totalCond: db.condominios.length,
+    condComPendencia: condComPendencia.size,
+    pendencias: pendencias,
+    nomeCond: nomeCond,
+    onRenovar: o => setModal({
+      tipo: "renovar",
+      dados: o
+    }),
+    onAbrirCond: id => setCondAberto(condPorId(id))
+  }), tipoAtual && /*#__PURE__*/React.createElement(SecaoTipo, {
+    tipo: tipoAtual,
+    lista: db.obrigacoes.filter(o => o.tipo === tipoAtual && (filtroCond === "todos" || o.condId === filtroCond)),
+    condominios: db.condominios,
+    nomeCond: nomeCond,
+    filtroCond: filtroCond,
+    setFiltroCond: setFiltroCond,
+    docsDaObrigacao: docsDaObrigacao,
+    onAbrirCond: id => setCondAberto(condPorId(id)),
+    onNova: () => setModal({
+      tipo: "obrigacao",
+      dados: {
+        condId: db.condominios[0]?.id,
+        tipo: tipoAtual,
+        executadoEm: hoje()
+      }
+    }),
+    onEditar: o => setModal({
+      tipo: "obrigacao",
+      dados: o
+    }),
+    onRenovar: o => setModal({
+      tipo: "renovar",
+      dados: o
+    }),
+    onExcluir: excluirObrigacao
+  }), aba === "obrigacoes" && /*#__PURE__*/React.createElement(Obrigacoes, {
+    lista: obrFiltradas,
+    condominios: db.condominios,
+    nomeCond: nomeCond,
+    filtroCond: filtroCond,
+    setFiltroCond: setFiltroCond,
+    filtroTipo: filtroTipo,
+    setFiltroTipo: setFiltroTipo,
+    filtroSit: filtroSit,
+    setFiltroSit: setFiltroSit,
+    docsDaObrigacao: docsDaObrigacao,
+    onNova: () => setModal({
+      tipo: "obrigacao",
+      dados: {
+        condId: db.condominios[0]?.id,
+        tipo: "caixa_dagua",
+        executadoEm: hoje()
+      }
+    }),
+    onEditar: o => setModal({
+      tipo: "obrigacao",
+      dados: o
+    }),
+    onRenovar: o => setModal({
+      tipo: "renovar",
+      dados: o
+    }),
+    onExcluir: excluirObrigacao
+  }), aba === "condominios" && /*#__PURE__*/React.createElement(Condominios, {
+    lista: db.condominios,
+    obrigacoes: db.obrigacoes,
+    onAbrir: setCondAberto,
+    onNovo: () => setModal({
+      tipo: "condominio",
+      dados: {}
+    })
+  }), aba === "documentos" && /*#__PURE__*/React.createElement(Documentos, {
+    lista: db.documentos,
+    nomeCond: nomeCond,
+    obrigacoes: db.obrigacoes,
+    condominios: db.condominios,
+    onAbrir: abrirDocumento,
+    onExcluir: excluirDocumento,
+    onEnviar: (arq, condId) => enviarDocumento(arq, {
+      condId
+    })
+  })))), modal?.tipo === "condominio" && /*#__PURE__*/React.createElement(FormCondominio, {
+    dados: modal.dados,
+    onSalvar: salvarCondominio,
+    onClose: () => setModal(null)
+  }), modal?.tipo === "obrigacao" && /*#__PURE__*/React.createElement(FormObrigacao, {
+    dados: modal.dados,
+    condominios: db.condominios,
+    onSalvar: salvarObrigacao,
+    onClose: () => setModal(null)
+  }), modal?.tipo === "renovar" && /*#__PURE__*/React.createElement(FormRenovar, {
+    obrigacao: modal.dados,
+    nomeCond: nomeCond,
+    onConfirmar: renovarObrigacao,
+    onClose: () => setModal(null)
+  }));
+}
+
+// ============================================================================
+// Telas
+// ============================================================================
+function TelaCarregando({
+  erro,
+  onTentar
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      minHeight: "100vh",
+      display: "grid",
+      placeItems: "center",
+      background: FUNDO,
+      padding: 24,
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Estilos, null), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 20,
+      display: "flex",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Logo, {
+    altura: 34
+  })), erro ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: TINTA,
+      fontSize: 16,
+      fontWeight: 600
+    }
+  }, "Não foi possível carregar os dados"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: SUAVE,
+      fontSize: 13.5,
+      margin: "8px auto 20px",
+      maxWidth: 340
+    }
+  }, erro), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    onClick: onTentar
+  }, "Tentar novamente")) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: SUAVE,
+      fontSize: 14
+    }
+  }, "Carregando…")));
+}
+function TelaLogin({
+  onEntrar
+}) {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [entrando, setEntrando] = useState(false);
+  const entrar = async () => {
+    if (!email.trim()) return setErro("Informe o e-mail.");
+    if (!senha) return setErro("Informe a senha.");
+    setErro("");
+    setEntrando(true);
+    if (!supabaseConfigurado) {
+      setEntrando(false);
+      return onEntrar(email.trim().split("@")[0].replace(/^\w/, c => c.toUpperCase()));
+    }
+    const {
+      error
+    } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: senha
+    });
+    setEntrando(false);
+    if (error) return setErro("E-mail ou senha inválidos.");
+    onEntrar(email.trim().split("@")[0].replace(/^\w/, c => c.toUpperCase()));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "login"
+  }, /*#__PURE__*/React.createElement(Estilos, null), /*#__PURE__*/React.createElement("div", {
+    className: "login-caixa"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      marginBottom: 28
+    }
+  }, /*#__PURE__*/React.createElement(Logo, {
+    altura: 38
+  })), /*#__PURE__*/React.createElement("h2", {
+    style: {
+      margin: "0 0 4px",
+      fontSize: 19,
+      color: TINTA,
+      fontWeight: 600,
+      textAlign: "center"
+    }
+  }, "Acesso ao sistema"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "0 0 26px",
+      fontSize: 13.5,
+      color: SUAVE,
+      textAlign: "center"
+    }
+  }, "Controle de obrigações prediais"), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "E-mail"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: email,
+    onChange: e => setEmail(e.target.value),
+    placeholder: "seu@email.com.br",
+    onKeyDown: e => e.key === "Enter" && entrar(),
+    disabled: entrando,
+    autoComplete: "username"
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Senha"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    value: senha,
+    onChange: e => setSenha(e.target.value),
+    placeholder: "••••••••",
+    onKeyDown: e => e.key === "Enter" && entrar(),
+    disabled: entrando,
+    autoComplete: "current-password"
+  })), erro && /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: VERMELHO,
+      fontSize: 13,
+      marginTop: 4
+    }
+  }, erro), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    style: {
+      width: "100%",
+      marginTop: 18,
+      justifyContent: "center"
+    },
+    onClick: entrar,
+    disabled: entrando
+  }, entrando ? "Entrando…" : "Entrar"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      marginTop: 22,
+      fontSize: 11.5,
+      color: SUAVE
+    }
+  }, "Moratta Gestão de Condomínios · acesso restrito")));
+}
+
+// ----- Painel ---------------------------------------------------------------
+function Painel({
+  vencidas,
+  aVencer30,
+  aVencer60,
+  totalCond,
+  condComPendencia,
+  pendencias,
+  nomeCond,
+  onRenovar,
+  onAbrirCond
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "indicadores"
+  }, /*#__PURE__*/React.createElement(Indicador, {
+    titulo: "Vencidas",
+    valor: vencidas.length,
+    cor: VERMELHO,
+    detalhe: "exigem ação imediata"
+  }), /*#__PURE__*/React.createElement(Indicador, {
+    titulo: "Vencem em 30 dias",
+    valor: aVencer30.length,
+    cor: AMBAR,
+    detalhe: "programar execução"
+  }), /*#__PURE__*/React.createElement(Indicador, {
+    titulo: "Vencem em 60 dias",
+    valor: aVencer60.length,
+    cor: TEAL,
+    detalhe: "no radar"
+  }), /*#__PURE__*/React.createElement(Indicador, {
+    titulo: "Condomínios",
+    valor: totalCond,
+    cor: TINTA,
+    detalhe: condComPendencia > 0 ? `${condComPendencia} com pendência` : "todos regulares"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "cartao"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "cab-cartao"
+  }, /*#__PURE__*/React.createElement("h2", null, "Pendências"), /*#__PURE__*/React.createElement("span", {
+    className: "sub"
+  }, "Vencidas e a vencer nos próximos 30 dias")), pendencias.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhuma pendência. Todas as obrigações estão em dia.") : /*#__PURE__*/React.createElement("div", {
+    className: "rolagem"
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Obrigação"), /*#__PURE__*/React.createElement("th", null, "Condomínio"), /*#__PURE__*/React.createElement("th", null, "Local"), /*#__PURE__*/React.createElement("th", null, "Validade"), /*#__PURE__*/React.createElement("th", null, "Situação"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, pendencias.map(o => /*#__PURE__*/React.createElement("tr", {
+    key: o.id
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      fontWeight: 500,
+      color: TINTA
+    }
+  }, TIPOS[o.tipo]?.label || o.tipo), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+    className: "link",
+    onClick: () => onAbrirCond(o.condId)
+  }, nomeCond(o.condId))), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: SUAVE
+    }
+  }, o.local || "—"), /*#__PURE__*/React.createElement("td", null, fmtData(o.validade)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Situacao, {
+    validade: o.validade
+  })), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal pequeno",
+    onClick: () => onRenovar(o)
+  }, "Registrar execução")))))))));
+}
+function Indicador({
+  titulo,
+  valor,
+  cor,
+  detalhe
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "indicador"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ind-titulo"
+  }, titulo), /*#__PURE__*/React.createElement("div", {
+    className: "ind-valor",
+    style: {
+      color: cor
+    }
+  }, valor), /*#__PURE__*/React.createElement("div", {
+    className: "ind-detalhe"
+  }, detalhe));
+}
+
+// ----- Seção de um tipo específico ------------------------------------------
+function SecaoTipo({
+  tipo,
+  lista,
+  condominios,
+  nomeCond,
+  filtroCond,
+  setFiltroCond,
+  docsDaObrigacao,
+  onAbrirCond,
+  onNova,
+  onEditar,
+  onRenovar,
+  onExcluir
+}) {
+  const t = TIPOS[tipo] || {
+    label: tipo,
+    meses: 12
+  };
+  const vencidas = lista.filter(o => diasAte(o.validade) < 0).length;
+  const aVencer = lista.filter(o => {
+    const d = diasAte(o.validade);
+    return d >= 0 && d <= 30;
+  }).length;
+  const emDia = lista.length - vencidas - aVencer;
+  const semRegistro = condominios.filter(c => !lista.some(o => o.condId === c.id));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "cartao faixa-tipo"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ft-info"
+  }, /*#__PURE__*/React.createElement("h2", null, t.label), /*#__PURE__*/React.createElement("span", null, "Periodicidade padrão: ", t.meses, " meses · ", lista.length, " ", lista.length === 1 ? "registro" : "registros")), /*#__PURE__*/React.createElement("div", {
+    className: "ft-numeros"
+  }, /*#__PURE__*/React.createElement(MiniNumero, {
+    n: emDia,
+    rotulo: "em dia",
+    cor: VERDE
+  }), /*#__PURE__*/React.createElement(MiniNumero, {
+    n: aVencer,
+    rotulo: "a vencer",
+    cor: AMBAR
+  }), /*#__PURE__*/React.createElement(MiniNumero, {
+    n: vencidas,
+    rotulo: "vencidas",
+    cor: VERMELHO
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "barra-acoes"
+  }, /*#__PURE__*/React.createElement(SeletorBusca, {
+    valor: filtroCond,
+    onChange: setFiltroCond,
+    estilo: {
+      width: 260
+    },
+    opcoes: [{
+      id: "todos",
+      nome: "Todos os condomínios"
+    }, ...condominios]
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    onClick: onNova
+  }, "Adicionar")), /*#__PURE__*/React.createElement("div", {
+    className: "cartao"
+  }, lista.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhum registro deste tipo com o filtro atual.") : /*#__PURE__*/React.createElement("div", {
+    className: "rolagem"
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Condomínio"), /*#__PURE__*/React.createElement("th", null, "Local"), /*#__PURE__*/React.createElement("th", null, "Executado"), /*#__PURE__*/React.createElement("th", null, "Validade"), /*#__PURE__*/React.createElement("th", null, "Situação"), /*#__PURE__*/React.createElement("th", null, "Fornecedor"), /*#__PURE__*/React.createElement("th", null, "Anexos"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, [...lista].sort((a, b) => a.validade.localeCompare(b.validade)).map(o => {
+    const anexos = docsDaObrigacao(o.id).length;
+    return /*#__PURE__*/React.createElement("tr", {
+      key: o.id
+    }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+      className: "link forte",
+      onClick: () => onAbrirCond(o.condId)
+    }, nomeCond(o.condId)), o.numeroDoc && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: SUAVE
+      }
+    }, "nº ", o.numeroDoc)), /*#__PURE__*/React.createElement("td", {
+      style: {
+        color: SUAVE
+      }
+    }, o.local || "—"), /*#__PURE__*/React.createElement("td", null, fmtData(o.executadoEm)), /*#__PURE__*/React.createElement("td", null, fmtData(o.validade)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Situacao, {
+      validade: o.validade
+    })), /*#__PURE__*/React.createElement("td", {
+      style: {
+        color: SUAVE
+      }
+    }, o.fornecedor || "—"), /*#__PURE__*/React.createElement("td", {
+      style: {
+        color: anexos ? TEAL : SUAVE,
+        fontWeight: anexos ? 600 : 400
+      }
+    }, anexos || "—"), /*#__PURE__*/React.createElement("td", {
+      style: {
+        textAlign: "right",
+        whiteSpace: "nowrap"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-neutro pequeno",
+      onClick: () => onRenovar(o)
+    }, "Renovar"), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-neutro pequeno",
+      onClick: () => onEditar(o)
+    }, "Editar"), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-neutro pequeno",
+      onClick: () => onExcluir(o)
+    }, "✕")));
+  }))))), filtroCond === "todos" && semRegistro.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "cartao",
+    style: {
+      marginTop: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "cab-cartao"
+  }, /*#__PURE__*/React.createElement("h2", null, "Sem registro deste tipo"), /*#__PURE__*/React.createElement("span", {
+    className: "sub"
+  }, semRegistro.length, " ", semRegistro.length === 1 ? "condomínio" : "condomínios")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px 20px",
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 8
+    }
+  }, semRegistro.map(c => /*#__PURE__*/React.createElement("button", {
+    key: c.id,
+    className: "pastilha clicavel",
+    onClick: () => onAbrirCond(c.id)
+  }, c.nome)))));
+}
+function MiniNumero({
+  n,
+  rotulo,
+  cor
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "mini-numero"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 20,
+      fontWeight: 600,
+      color: cor,
+      lineHeight: 1
+    }
+  }, n), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: SUAVE,
+      marginTop: 3
+    }
+  }, rotulo));
+}
+
+// ----- Obrigações -----------------------------------------------------------
+function Obrigacoes({
+  lista,
+  condominios,
+  nomeCond,
+  filtroCond,
+  setFiltroCond,
+  filtroTipo,
+  setFiltroTipo,
+  filtroSit,
+  setFiltroSit,
+  docsDaObrigacao,
+  onNova,
+  onEditar,
+  onRenovar,
+  onExcluir
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "barra-acoes"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "filtros"
+  }, /*#__PURE__*/React.createElement(SeletorBusca, {
+    valor: filtroCond,
+    onChange: setFiltroCond,
+    estilo: {
+      width: 230
+    },
+    opcoes: [{
+      id: "todos",
+      nome: "Todos os condomínios"
+    }, ...condominios]
+  }), /*#__PURE__*/React.createElement("select", {
+    value: filtroTipo,
+    onChange: e => setFiltroTipo(e.target.value),
+    style: {
+      width: 230
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "todos"
+  }, "Todos os tipos"), GRUPOS.map(g => /*#__PURE__*/React.createElement("optgroup", {
+    key: g,
+    label: g
+  }, Object.entries(TIPOS).filter(([, v]) => v.grupo === g).map(([k, v]) => /*#__PURE__*/React.createElement("option", {
+    key: k,
+    value: k
+  }, v.label))))), /*#__PURE__*/React.createElement("select", {
+    value: filtroSit,
+    onChange: e => setFiltroSit(e.target.value),
+    style: {
+      width: 160
+    }
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "todas"
+  }, "Todas as situações"), /*#__PURE__*/React.createElement("option", {
+    value: "vencido"
+  }, "Vencidas"), /*#__PURE__*/React.createElement("option", {
+    value: "avencer"
+  }, "A vencer (30 dias)"), /*#__PURE__*/React.createElement("option", {
+    value: "emdia"
+  }, "Em dia"))), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    onClick: onNova
+  }, "Nova obrigação")), /*#__PURE__*/React.createElement("div", {
+    className: "cartao"
+  }, lista.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhuma obrigação encontrada com os filtros atuais.") : /*#__PURE__*/React.createElement("div", {
+    className: "rolagem"
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Obrigação"), /*#__PURE__*/React.createElement("th", null, "Condomínio"), /*#__PURE__*/React.createElement("th", null, "Local"), /*#__PURE__*/React.createElement("th", null, "Executado"), /*#__PURE__*/React.createElement("th", null, "Validade"), /*#__PURE__*/React.createElement("th", null, "Situação"), /*#__PURE__*/React.createElement("th", null, "Anexos"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, lista.map(o => {
+    const anexos = docsDaObrigacao(o.id).length;
+    return /*#__PURE__*/React.createElement("tr", {
+      key: o.id
+    }, /*#__PURE__*/React.createElement("td", {
+      style: {
+        fontWeight: 500,
+        color: TINTA
+      }
+    }, TIPOS[o.tipo]?.label || o.tipo, o.numeroDoc && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11.5,
+        color: SUAVE
+      }
+    }, "nº ", o.numeroDoc)), /*#__PURE__*/React.createElement("td", null, nomeCond(o.condId)), /*#__PURE__*/React.createElement("td", {
+      style: {
+        color: SUAVE
+      }
+    }, o.local || "—"), /*#__PURE__*/React.createElement("td", null, fmtData(o.executadoEm)), /*#__PURE__*/React.createElement("td", null, fmtData(o.validade)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Situacao, {
+      validade: o.validade
+    })), /*#__PURE__*/React.createElement("td", {
+      style: {
+        color: anexos ? TEAL : SUAVE,
+        fontWeight: anexos ? 600 : 400
+      }
+    }, anexos || "—"), /*#__PURE__*/React.createElement("td", {
+      style: {
+        textAlign: "right",
+        whiteSpace: "nowrap"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-neutro pequeno",
+      onClick: () => onRenovar(o)
+    }, "Renovar"), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-neutro pequeno",
+      onClick: () => onEditar(o)
+    }, "Editar"), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-neutro pequeno",
+      onClick: () => onExcluir(o)
+    }, "✕")));
+  }))))));
+}
+
+// ----- Condomínios ----------------------------------------------------------
+function Condominios({
+  lista,
+  obrigacoes,
+  onAbrir,
+  onNovo
+}) {
+  const [busca, setBusca] = useState("");
+  const alvo = semAcento(busca.trim());
+  const filtrada = alvo ? lista.filter(c => semAcento(c.nome).includes(alvo) || semAcento(c.bairro).includes(alvo)) : lista;
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "barra-acoes"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: busca,
+    onChange: e => setBusca(e.target.value),
+    placeholder: "Pesquisar condomínio…",
+    style: {
+      width: 300
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    onClick: onNovo
+  }, "Novo condomínio")), filtrada.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "cartao"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhum condomínio encontrado.")) : /*#__PURE__*/React.createElement("div", {
+    className: "grade-cartoes"
+  }, filtrada.map(c => {
+    const obrs = obrigacoes.filter(o => o.condId === c.id);
+    const venc = obrs.filter(o => diasAte(o.validade) < 0).length;
+    const prox = obrs.filter(o => {
+      const d = diasAte(o.validade);
+      return d >= 0 && d <= 30;
+    }).length;
+    return /*#__PURE__*/React.createElement("button", {
+      key: c.id,
+      className: "cartao-cond",
+      onClick: () => onAbrir(c)
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "cc-nome"
+    }, c.nome), /*#__PURE__*/React.createElement("div", {
+      className: "cc-sub"
+    }, c.bairro || c.endereco || "Endereço não informado"), /*#__PURE__*/React.createElement("div", {
+      className: "cc-rodape"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pastilha"
+    }, obrs.length, " ", obrs.length === 1 ? "obrigação" : "obrigações"), venc > 0 && /*#__PURE__*/React.createElement(Etiqueta, {
+      cor: VERMELHO,
+      suave: true
+    }, venc, " vencida", venc > 1 ? "s" : ""), venc === 0 && prox > 0 && /*#__PURE__*/React.createElement(Etiqueta, {
+      cor: AMBAR,
+      suave: true
+    }, prox, " a vencer"), venc === 0 && prox === 0 && obrs.length > 0 && /*#__PURE__*/React.createElement(Etiqueta, {
+      cor: VERDE,
+      suave: true
+    }, "Em dia")));
+  })));
+}
+
+// ----- Ficha do condomínio --------------------------------------------------
+function FichaCondominio({
+  cond,
+  obrigacoes,
+  documentos,
+  docsDaObrigacao,
+  onVoltar,
+  onEditar,
+  onExcluir,
+  onNovaObrigacao,
+  onEditarObrigacao,
+  onRenovar,
+  onExcluirObrigacao,
+  onEnviarDoc,
+  onAbrirDoc,
+  onExcluirDoc
+}) {
+  const entradaArquivo = useRef(null);
+  const [enviando, setEnviando] = useState(false);
+  const telLimpo = (cond.telefone || "").replace(/\D/g, "");
+  const escolherArquivo = async e => {
+    const arq = e.target.files?.[0];
+    if (!arq) return;
+    setEnviando(true);
+    await onEnviarDoc(arq, null);
+    setEnviando(false);
+    e.target.value = "";
+  };
+  const porGrupo = GRUPOS.map(g => ({
+    grupo: g,
+    itens: obrigacoes.filter(o => (TIPOS[o.tipo]?.grupo || "Documentos") === g)
+  })).filter(x => x.itens.length > 0);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    className: "voltar",
+    onClick: onVoltar
+  }, "← Voltar para condomínios"), /*#__PURE__*/React.createElement("div", {
+    className: "cartao",
+    style: {
+      marginBottom: 18
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "cab-cartao"
+  }, /*#__PURE__*/React.createElement("h2", null, "Dados do condomínio"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: onEditar
+  }, "Editar"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: onExcluir,
+    style: {
+      color: VERMELHO
+    }
+  }, "Excluir"))), /*#__PURE__*/React.createElement("div", {
+    className: "ficha"
+  }, /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "Síndico(a)",
+    valor: cond.sindico
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "Telefone",
+    valor: cond.telefone,
+    extra: telLimpo && /*#__PURE__*/React.createElement("a", {
+      className: "link",
+      href: `https://wa.me/55${telLimpo}`,
+      target: "_blank",
+      rel: "noreferrer"
+    }, "WhatsApp")
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "E-mail",
+    valor: cond.email
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "Gestor responsável",
+    valor: cond.gestor
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "Endereço",
+    valor: cond.endereco
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "Bairro",
+    valor: cond.bairro
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "Unidades",
+    valor: cond.unidades
+  }), /*#__PURE__*/React.createElement(Dado, {
+    rotulo: "CNPJ",
+    valor: cond.cnpj
+  })), cond.observacoes && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 20px 18px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rot"
+  }, "Observações"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: TEXTO,
+      whiteSpace: "pre-wrap"
+    }
+  }, cond.observacoes))), /*#__PURE__*/React.createElement("div", {
+    className: "cartao",
+    style: {
+      marginBottom: 18
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "cab-cartao"
+  }, /*#__PURE__*/React.createElement("h2", null, "Obrigações e prazos"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal pequeno",
+    onClick: onNovaObrigacao
+  }, "Adicionar obrigação")), obrigacoes.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhuma obrigação cadastrada para este condomínio.") : porGrupo.map(({
+    grupo,
+    itens
+  }) => /*#__PURE__*/React.createElement("div", {
+    key: grupo
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "faixa-grupo"
+  }, grupo), /*#__PURE__*/React.createElement("div", {
+    className: "rolagem"
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Obrigação"), /*#__PURE__*/React.createElement("th", null, "Local"), /*#__PURE__*/React.createElement("th", null, "Executado"), /*#__PURE__*/React.createElement("th", null, "Validade"), /*#__PURE__*/React.createElement("th", null, "Situação"), /*#__PURE__*/React.createElement("th", null, "Anexos"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, itens.map(o => /*#__PURE__*/React.createElement("tr", {
+    key: o.id
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      fontWeight: 500,
+      color: TINTA
+    }
+  }, TIPOS[o.tipo]?.label || o.tipo, o.numeroDoc && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: SUAVE
+    }
+  }, "nº ", o.numeroDoc)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: SUAVE
+    }
+  }, o.local || "—"), /*#__PURE__*/React.createElement("td", null, fmtData(o.executadoEm)), /*#__PURE__*/React.createElement("td", null, fmtData(o.validade)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Situacao, {
+    validade: o.validade
+  })), /*#__PURE__*/React.createElement("td", null, docsDaObrigacao(o.id).map(d => /*#__PURE__*/React.createElement("button", {
+    key: d.id,
+    className: "chip-doc",
+    onClick: () => onAbrirDoc(d),
+    title: d.nome
+  }, d.nome.length > 18 ? d.nome.slice(0, 16) + "…" : d.nome)), /*#__PURE__*/React.createElement(AnexarArquivo, {
+    onArquivo: arq => onEnviarDoc(arq, o.id),
+    rotulo: "+ anexar"
+  })), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: "right",
+      whiteSpace: "nowrap"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: () => onRenovar(o)
+  }, "Renovar"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: () => onEditarObrigacao(o)
+  }, "Editar"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: () => onExcluirObrigacao(o)
+  }, "✕")))))))))), /*#__PURE__*/React.createElement("div", {
+    className: "cartao"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "cab-cartao"
+  }, /*#__PURE__*/React.createElement("h2", null, "Documentos do condomínio"), /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+    ref: entradaArquivo,
+    type: "file",
+    style: {
+      display: "none"
+    },
+    onChange: escolherArquivo,
+    accept: ".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal pequeno",
+    onClick: () => entradaArquivo.current?.click(),
+    disabled: enviando
+  }, enviando ? "Enviando…" : "Enviar arquivo"))), documentos.filter(d => !d.obrId).length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhum documento geral. Use “Enviar arquivo” para guardar convenção, regimento, atas…") : /*#__PURE__*/React.createElement("ul", {
+    className: "lista-docs"
+  }, documentos.filter(d => !d.obrId).map(d => /*#__PURE__*/React.createElement("li", {
+    key: d.id
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "link forte",
+    onClick: () => onAbrirDoc(d)
+  }, d.nome), /*#__PURE__*/React.createElement("span", {
+    className: "meta"
+  }, tamanhoArquivo(d.tamanho), " · ", fmtData((d.enviadoEm || "").slice(0, 10))), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: () => onExcluirDoc(d)
+  }, "✕"))))));
+}
+function Dado({
+  rotulo,
+  valor,
+  extra
+}) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "rot"
+  }, rotulo), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: valor ? TINTA : SUAVE,
+      marginTop: 2
+    }
+  }, valor || "—", " ", extra));
+}
+function AnexarArquivo({
+  onArquivo,
+  rotulo
+}) {
+  const entrada = useRef(null);
+  const [enviando, setEnviando] = useState(false);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+    ref: entrada,
+    type: "file",
+    style: {
+      display: "none"
+    },
+    accept: ".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx",
+    onChange: async e => {
+      const arq = e.target.files?.[0];
+      if (!arq) return;
+      setEnviando(true);
+      await onArquivo(arq);
+      setEnviando(false);
+      e.target.value = "";
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "chip-anexar",
+    onClick: () => entrada.current?.click(),
+    disabled: enviando
+  }, enviando ? "enviando…" : rotulo));
+}
+
+// ----- Documentos (aba) -----------------------------------------------------
+function Documentos({
+  lista,
+  nomeCond,
+  obrigacoes,
+  condominios,
+  onAbrir,
+  onExcluir,
+  onEnviar
+}) {
+  const [busca, setBusca] = useState("");
+  const [condDestino, setCondDestino] = useState(condominios[0]?.id || "");
+  const entrada = useRef(null);
+  const [enviando, setEnviando] = useState(false);
+  const alvo = semAcento(busca.trim());
+  const filtrada = alvo ? lista.filter(d => semAcento(d.nome).includes(alvo) || semAcento(nomeCond(d.condId)).includes(alvo)) : lista;
+  const rotuloObrigacao = obrId => {
+    const o = obrigacoes.find(x => x.id === obrId);
+    return o ? TIPOS[o.tipo]?.label || o.tipo : "Documento geral";
+  };
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "barra-acoes"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: busca,
+    onChange: e => setBusca(e.target.value),
+    placeholder: "Pesquisar documento ou condomínio…",
+    style: {
+      width: 320
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement(SeletorBusca, {
+    valor: condDestino,
+    onChange: setCondDestino,
+    opcoes: condominios,
+    estilo: {
+      width: 220
+    },
+    placeholder: "Condomínio"
+  }), /*#__PURE__*/React.createElement("input", {
+    ref: entrada,
+    type: "file",
+    style: {
+      display: "none"
+    },
+    accept: ".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx",
+    onChange: async e => {
+      const arq = e.target.files?.[0];
+      if (!arq) return;
+      if (!condDestino) {
+        alert("Escolha o condomínio antes de enviar.");
+        return;
+      }
+      setEnviando(true);
+      await onEnviar(arq, condDestino);
+      setEnviando(false);
+      e.target.value = "";
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-principal",
+    onClick: () => entrada.current?.click(),
+    disabled: enviando
+  }, enviando ? "Enviando…" : "Enviar documento"))), /*#__PURE__*/React.createElement("div", {
+    className: "cartao"
+  }, filtrada.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "vazio"
+  }, "Nenhum documento guardado ainda.") : /*#__PURE__*/React.createElement("div", {
+    className: "rolagem"
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Arquivo"), /*#__PURE__*/React.createElement("th", null, "Condomínio"), /*#__PURE__*/React.createElement("th", null, "Vinculado a"), /*#__PURE__*/React.createElement("th", null, "Tamanho"), /*#__PURE__*/React.createElement("th", null, "Enviado"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, filtrada.map(d => /*#__PURE__*/React.createElement("tr", {
+    key: d.id
+  }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+    className: "link forte",
+    onClick: () => onAbrir(d)
+  }, d.nome)), /*#__PURE__*/React.createElement("td", null, nomeCond(d.condId)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: SUAVE
+    }
+  }, rotuloObrigacao(d.obrId)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: SUAVE
+    }
+  }, tamanhoArquivo(d.tamanho)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: SUAVE
+    }
+  }, fmtData((d.enviadoEm || "").slice(0, 10))), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-neutro pequeno",
+    onClick: () => onExcluir(d)
+  }, "✕")))))))));
+}
+
+// ============================================================================
+// Formulários
+// ============================================================================
+function FormCondominio({
+  dados,
+  onSalvar,
+  onClose
+}) {
+  const [f, setF] = useState({
+    nome: "",
+    cnpj: "",
+    endereco: "",
+    bairro: "",
+    unidades: "",
+    sindico: "",
+    telefone: "",
+    email: "",
+    gestor: "",
+    observacoes: "",
+    ...dados
+  });
+  const [salvando, setSalvando] = useState(false);
+  const mudar = k => e => setF({
+    ...f,
+    [k]: e.target.value
+  });
+  return /*#__PURE__*/React.createElement(Modal, {
+    titulo: dados.id ? "Editar condomínio" : "Novo condomínio",
+    onClose: onClose,
+    largura: 560
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Nome do condomínio"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.nome,
+    onChange: mudar("nome"),
+    placeholder: "Ex.: Edifício Eunice Guimarães",
+    autoFocus: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Síndico(a)"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.sindico,
+    onChange: mudar("sindico")
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Telefone"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.telefone,
+    onChange: mudar("telefone"),
+    placeholder: "(42) 99999-9999"
+  }))), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "E-mail"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.email,
+    onChange: mudar("email"),
+    placeholder: "sindico@condominio.com.br"
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Endereço"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.endereco,
+    onChange: mudar("endereco")
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Bairro"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.bairro,
+    onChange: mudar("bairro")
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Nº de unidades"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    value: f.unidades,
+    onChange: mudar("unidades")
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "CNPJ"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.cnpj,
+    onChange: mudar("cnpj")
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Gestor responsável"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.gestor,
+    onChange: mudar("gestor"),
+    placeholder: "Quem cuida na Moratta"
+  }))), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Observações"
+  }, /*#__PURE__*/React.createElement("textarea", {
+    rows: 3,
+    value: f.observacoes,
+    onChange: mudar("observacoes")
+  })), /*#__PURE__*/React.createElement(Acoes, {
+    carregando: salvando,
+    onClose: onClose,
+    onSave: async () => {
+      if (!f.nome.trim()) return alert("Informe o nome do condomínio.");
+      setSalvando(true);
+      await onSalvar(f);
+      setSalvando(false);
+    }
+  }));
+}
+function FormObrigacao({
+  dados,
+  condominios,
+  onSalvar,
+  onClose
+}) {
+  const [f, setF] = useState({
+    tipo: "caixa_dagua",
+    local: "",
+    executadoEm: hoje(),
+    validade: "",
+    fornecedor: "",
+    custo: "",
+    numeroDoc: "",
+    observacoes: "",
+    periodicidade: null,
+    condId: condominios[0]?.id,
+    ...dados
+  });
+  const [salvando, setSalvando] = useState(false);
+  const meses = f.periodicidade || TIPOS[f.tipo]?.meses || 12;
+  const validadeAuto = f.executadoEm ? addMeses(f.executadoEm, meses) : "";
+  const mudar = k => e => setF({
+    ...f,
+    [k]: e.target.value
+  });
+  return /*#__PURE__*/React.createElement(Modal, {
+    titulo: dados.id ? "Editar obrigação" : "Nova obrigação",
+    onClose: onClose,
+    largura: 560
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Condomínio"
+  }, /*#__PURE__*/React.createElement(SeletorBusca, {
+    valor: f.condId,
+    opcoes: condominios,
+    onChange: v => setF({
+      ...f,
+      condId: v
+    }),
+    placeholder: "Escolha o condomínio"
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Tipo de obrigação"
+  }, /*#__PURE__*/React.createElement("select", {
+    value: f.tipo,
+    onChange: e => setF({
+      ...f,
+      tipo: e.target.value,
+      periodicidade: null
+    })
+  }, GRUPOS.map(g => /*#__PURE__*/React.createElement("optgroup", {
+    key: g,
+    label: g
+  }, Object.entries(TIPOS).filter(([, v]) => v.grupo === g).map(([k, v]) => /*#__PURE__*/React.createElement("option", {
+    key: k,
+    value: k
+  }, v.label)))))), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Local / identificação",
+    dica: "Opcional"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.local,
+    onChange: mudar("local"),
+    placeholder: "Ex.: Bloco A, reservatório superior"
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Periodicidade (meses)",
+    dica: `Padrão do tipo: ${TIPOS[f.tipo]?.meses || 12} meses`
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    value: f.periodicidade || "",
+    onChange: e => setF({
+      ...f,
+      periodicidade: e.target.value ? parseInt(e.target.value, 10) : null
+    }),
+    placeholder: String(TIPOS[f.tipo]?.meses || 12)
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Executado em"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: f.executadoEm,
+    onChange: mudar("executadoEm")
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Válido até",
+    dica: validadeAuto ? `Em branco, calcula ${fmtData(validadeAuto)}` : ""
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: f.validade,
+    onChange: mudar("validade")
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Fornecedor / executante"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.fornecedor,
+    onChange: mudar("fornecedor"),
+    placeholder: "Ex.: NORUM Engenharia"
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Custo (R$)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    step: "0.01",
+    value: f.custo,
+    onChange: mudar("custo")
+  }))), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Nº do documento / certificado",
+    dica: "Nº do AVCB, do laudo, do certificado"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.numeroDoc,
+    onChange: mudar("numeroDoc")
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Observações"
+  }, /*#__PURE__*/React.createElement("textarea", {
+    rows: 2,
+    value: f.observacoes,
+    onChange: mudar("observacoes")
+  })), /*#__PURE__*/React.createElement(Acoes, {
+    carregando: salvando,
+    onClose: onClose,
+    onSave: async () => {
+      if (!f.condId) return alert("Escolha o condomínio.");
+      const validade = f.validade || validadeAuto;
+      if (!validade) return alert("Informe a data de validade ou a data de execução.");
+      setSalvando(true);
+      await onSalvar({
+        ...f,
+        validade,
+        periodicidade: f.periodicidade || meses
+      });
+      setSalvando(false);
+    }
+  }));
+}
+function FormRenovar({
+  obrigacao,
+  nomeCond,
+  onConfirmar,
+  onClose
+}) {
+  const meses = obrigacao.periodicidade || TIPOS[obrigacao.tipo]?.meses || 12;
+  const [executadoEm, setExecutadoEm] = useState(hoje());
+  const [validade, setValidade] = useState("");
+  const [fornecedor, setFornecedor] = useState(obrigacao.fornecedor || "");
+  const [custo, setCusto] = useState("");
+  const [numeroDoc, setNumeroDoc] = useState("");
+  const [salvando, setSalvando] = useState(false);
+  const validadeAuto = executadoEm ? addMeses(executadoEm, meses) : "";
+  return /*#__PURE__*/React.createElement(Modal, {
+    titulo: "Registrar execução",
+    subtitulo: `${TIPOS[obrigacao.tipo]?.label || obrigacao.tipo} · ${nomeCond(obrigacao.condId)}`,
+    onClose: onClose,
+    largura: 520
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "aviso"
+  }, "O registro atual (validade ", fmtData(obrigacao.validade), ") será guardado no histórico e substituído pelos dados abaixo."), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Executado em"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: executadoEm,
+    onChange: e => setExecutadoEm(e.target.value),
+    autoFocus: true
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Nova validade",
+    dica: validadeAuto ? `Em branco, calcula ${fmtData(validadeAuto)}` : ""
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: validade,
+    onChange: e => setValidade(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "duas-colunas"
+  }, /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Fornecedor"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: fornecedor,
+    onChange: e => setFornecedor(e.target.value)
+  })), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Custo (R$)"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    step: "0.01",
+    value: custo,
+    onChange: e => setCusto(e.target.value)
+  }))), /*#__PURE__*/React.createElement(Campo, {
+    rotulo: "Nº do documento / certificado"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: numeroDoc,
+    onChange: e => setNumeroDoc(e.target.value)
+  })), /*#__PURE__*/React.createElement(Acoes, {
+    rotulo: "Confirmar",
+    carregando: salvando,
+    onClose: onClose,
+    onSave: async () => {
+      const v = validade || validadeAuto;
+      if (!v) return alert("Informe a data de execução ou a nova validade.");
+      setSalvando(true);
+      await onConfirmar(obrigacao, {
+        executadoEm,
+        validade: v,
+        fornecedor,
+        custo,
+        numeroDoc
+      });
+      setSalvando(false);
+    }
+  }));
+}
+
+// ============================================================================
+// Estilos
+// ============================================================================
+function Estilos() {
+  return /*#__PURE__*/React.createElement("style", null, `
+      * { box-sizing: border-box; }
+      .app { display:flex; min-height:100vh; background:${FUNDO}; color:${TEXTO}; }
+
+      /* ----- Barra lateral ----- */
+      .lateral { width:236px; flex-shrink:0; background:${BRANCO}; border-right:1px solid ${LINHA};
+        display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+      .item-nav { display:flex; align-items:center; width:100%; border:none; background:transparent;
+        color:${TEXTO}; padding:11px 14px; border-radius:8px; cursor:pointer; font-size:14px;
+        font-weight:500; text-align:left; font-family:inherit; margin-bottom:2px; transition:background .15s, color .15s; }
+      .item-nav:hover { background:${FUNDO}; color:${TINTA}; }
+      .item-nav.ativo { background:${TEAL_FUNDO}; color:${TEAL}; font-weight:600; }
+      .contador { margin-left:auto; background:${VERMELHO}; color:#fff; font-size:11px; font-weight:700;
+        padding:1px 7px; border-radius:20px; }
+      .item-nav.fino { font-size:13px; font-weight:400; padding:8px 14px; color:${TEXTO}; }
+      .item-nav.fino.ativo { font-weight:600; }
+      .titulo-grupo { font-size:10.5px; font-weight:700; color:${SUAVE}; letter-spacing:.6px;
+        text-transform:uppercase; padding:14px 14px 6px; }
+      .divisor { height:1px; background:${LINHA}; margin:12px 14px; }
+
+      /* ----- Faixa de resumo do tipo ----- */
+      .faixa-tipo { display:flex; align-items:center; justify-content:space-between; gap:18px;
+        padding:16px 20px; margin-bottom:18px; flex-wrap:wrap; border-left:3px solid ${TEAL}; }
+      .ft-info h2 { margin:0; font-size:15.5px; color:${TINTA}; font-weight:600; }
+      .ft-info span { font-size:12.5px; color:${SUAVE}; }
+      .ft-numeros { display:flex; gap:10px; }
+      .mini-numero { text-align:center; min-width:62px; padding:7px 10px; border-radius:8px; background:${FUNDO};
+        border:1px solid ${LINHA}; }
+      .pastilha.clicavel { cursor:pointer; font-family:inherit; }
+      .pastilha.clicavel:hover { border-color:${TEAL}; color:${TEAL}; }
+      .btn-sair { margin-top:8px; border:1px solid ${LINHA}; background:${BRANCO}; color:${TEXTO};
+        font-size:12.5px; padding:7px 12px; border-radius:7px; cursor:pointer; font-family:inherit; }
+      .btn-sair:hover { background:${FUNDO}; }
+
+      /* ----- Conteúdo ----- */
+      .conteudo { flex:1; min-width:0; display:flex; flex-direction:column; }
+      .topo { background:${BRANCO}; border-bottom:1px solid ${LINHA}; padding:18px 30px;
+        display:flex; align-items:center; gap:14px; }
+      .topo h1 { margin:0; font-size:19px; color:${TINTA}; font-weight:600; }
+      .topo p { margin:2px 0 0; font-size:13px; color:${SUAVE}; }
+      .principal { padding:26px 30px 50px; flex:1; max-width:1240px; width:100%; }
+
+      /* ----- Indicadores ----- */
+      .indicadores { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
+      .indicador { background:${BRANCO}; border:1px solid ${LINHA}; border-radius:10px; padding:18px 20px; }
+      .ind-titulo { font-size:12.5px; color:${SUAVE}; font-weight:500; }
+      .ind-valor { font-size:30px; font-weight:600; margin:6px 0 2px; letter-spacing:-.5px; }
+      .ind-detalhe { font-size:12px; color:${SUAVE}; }
+
+      /* ----- Cartões ----- */
+      .cartao { background:${BRANCO}; border:1px solid ${LINHA}; border-radius:10px; overflow:hidden; }
+      .cab-cartao { display:flex; align-items:center; justify-content:space-between; gap:14px;
+        padding:16px 20px; border-bottom:1px solid ${LINHA}; }
+      .cab-cartao h2 { margin:0; font-size:15px; color:${TINTA}; font-weight:600; }
+      .cab-cartao .sub { font-size:12.5px; color:${SUAVE}; }
+      .vazio { padding:34px 20px; text-align:center; color:${SUAVE}; font-size:13.5px; }
+      .faixa-grupo { padding:9px 20px; background:${FUNDO}; font-size:11.5px; font-weight:600;
+        color:${SUAVE}; letter-spacing:.4px; text-transform:uppercase; border-bottom:1px solid ${LINHA}; }
+
+      /* ----- Tabelas ----- */
+      .rolagem { overflow-x:auto; }
+      table { width:100%; border-collapse:collapse; }
+      th { text-align:left; font-size:11.5px; font-weight:600; color:${SUAVE}; letter-spacing:.3px;
+        text-transform:uppercase; padding:11px 16px; border-bottom:1px solid ${LINHA}; white-space:nowrap; }
+      td { padding:13px 16px; border-bottom:1px solid ${LINHA}; font-size:13.5px; color:${TEXTO}; vertical-align:middle; }
+      tbody tr:last-child td { border-bottom:none; }
+      tbody tr:hover { background:#FBFCFC; }
+
+      /* ----- Botões ----- */
+      .btn { border:none; border-radius:8px; padding:9px 16px; font-size:13.5px; font-weight:500;
+        cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;
+        transition:background .15s, border-color .15s, opacity .15s; }
+      .btn:disabled { opacity:.6; cursor:default; }
+      .btn-principal { background:${TEAL}; color:#fff; }
+      .btn-principal:hover:not(:disabled) { background:#38939A; }
+      .btn-neutro { background:${BRANCO}; color:${TEXTO}; border:1px solid ${LINHA}; }
+      .btn-neutro:hover:not(:disabled) { background:${FUNDO}; border-color:#D2DADD; }
+      .pequeno { padding:6px 11px; font-size:12.5px; margin-left:6px; }
+      .link { background:none; border:none; color:${TEAL}; cursor:pointer; font-size:inherit;
+        font-family:inherit; padding:0; text-align:left; }
+      .link:hover { text-decoration:underline; }
+      .link.forte { font-weight:500; }
+      .voltar { background:none; border:none; color:${SUAVE}; font-size:13px; cursor:pointer;
+        font-family:inherit; padding:0 0 16px; }
+      .voltar:hover { color:${TEAL}; }
+
+      /* ----- Formulários ----- */
+      label { display:block; font-size:12.5px; font-weight:500; color:${TEXTO}; margin-bottom:6px; }
+      input, select, textarea { width:100%; padding:9px 12px; border:1px solid ${LINHA}; border-radius:8px;
+        font-size:13.5px; font-family:inherit; color:${TINTA}; background:${BRANCO}; outline:none;
+        transition:border-color .15s, box-shadow .15s; }
+      input:focus, select:focus, textarea:focus { border-color:${TEAL}; box-shadow:0 0 0 3px ${TEAL}1F; }
+      input::placeholder, textarea::placeholder { color:#A9B8BE; }
+      textarea { resize:vertical; }
+      .duas-colunas { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+      .barra-acoes { display:flex; align-items:center; justify-content:space-between; gap:14px;
+        margin-bottom:18px; flex-wrap:wrap; }
+      .filtros { display:flex; gap:10px; flex-wrap:wrap; }
+      .aviso { background:${TEAL_FUNDO}; border:1px solid ${TEAL}33; color:${TEXTO}; font-size:12.5px;
+        padding:11px 13px; border-radius:8px; margin-bottom:18px; line-height:1.5; }
+
+      /* ----- Seletor com busca ----- */
+      .sel-botao { width:100%; display:flex; align-items:center; justify-content:space-between;
+        padding:9px 12px; border:1px solid ${LINHA}; border-radius:8px; font-size:13.5px;
+        background:${BRANCO}; color:${TINTA}; cursor:pointer; text-align:left; font-family:inherit; }
+      .sel-botao:hover { border-color:#CBD6DA; }
+      .sel-lista { position:absolute; z-index:60; top:calc(100% + 5px); left:0; right:0; background:${BRANCO};
+        border:1px solid ${LINHA}; border-radius:9px; box-shadow:0 10px 28px rgba(22,40,47,.12); overflow:hidden; }
+      .sel-busca { border:none !important; border-bottom:1px solid ${LINHA} !important; border-radius:0 !important; }
+      .sel-busca:focus { box-shadow:none !important; }
+      .sel-item { display:block; width:100%; text-align:left; border:none; background:transparent;
+        color:${TEXTO}; padding:9px 12px; font-size:13px; cursor:pointer; font-family:inherit; }
+      .sel-item:hover { background:${FUNDO}; }
+      .sel-item.ativo { background:${TEAL_FUNDO}; color:${TEAL}; font-weight:600; }
+
+      /* ----- Modal ----- */
+      .fundo-modal { position:fixed; inset:0; background:rgba(22,40,47,.35); display:grid;
+        place-items:center; padding:20px; z-index:80; }
+      .caixa-modal { background:${BRANCO}; border-radius:12px; max-width:100%; max-height:92vh;
+        display:flex; flex-direction:column; box-shadow:0 20px 50px rgba(22,40,47,.2); }
+      .topo-modal { display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+        padding:20px 22px 16px; border-bottom:1px solid ${LINHA}; }
+      .corpo-modal { padding:20px 22px 22px; overflow-y:auto; }
+      .fechar { background:none; border:none; color:${SUAVE}; font-size:15px; cursor:pointer;
+        padding:2px 6px; border-radius:6px; line-height:1; }
+      .fechar:hover { background:${FUNDO}; color:${TINTA}; }
+
+      /* ----- Condomínios ----- */
+      .grade-cartoes { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; }
+      .cartao-cond { background:${BRANCO}; border:1px solid ${LINHA}; border-radius:10px; padding:17px 18px;
+        text-align:left; cursor:pointer; font-family:inherit; transition:border-color .15s, box-shadow .15s; }
+      .cartao-cond:hover { border-color:${TEAL}66; box-shadow:0 4px 14px rgba(22,40,47,.07); }
+      .cc-nome { font-size:14.5px; font-weight:600; color:${TINTA}; margin-bottom:3px; }
+      .cc-sub { font-size:12.5px; color:${SUAVE}; margin-bottom:13px; }
+      .cc-rodape { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+      .pastilha { font-size:11.5px; color:${TEXTO}; background:${FUNDO}; border:1px solid ${LINHA};
+        padding:3px 9px; border-radius:6px; }
+
+      /* ----- Ficha ----- */
+      .ficha { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:18px; padding:20px; }
+      .rot { font-size:11px; color:${SUAVE}; text-transform:uppercase; letter-spacing:.4px; font-weight:600; }
+      .chip-doc { background:${TEAL_FUNDO}; border:1px solid ${TEAL}33; color:${TEAL}; font-size:11.5px;
+        padding:3px 8px; border-radius:6px; cursor:pointer; font-family:inherit; margin:0 4px 4px 0; }
+      .chip-doc:hover { background:${TEAL}22; }
+      .chip-anexar { background:none; border:1px dashed #C8D4D8; color:${SUAVE}; font-size:11.5px;
+        padding:3px 8px; border-radius:6px; cursor:pointer; font-family:inherit; }
+      .chip-anexar:hover { border-color:${TEAL}; color:${TEAL}; }
+      .lista-docs { list-style:none; margin:0; padding:0; }
+      .lista-docs li { display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid ${LINHA}; }
+      .lista-docs li:last-child { border-bottom:none; }
+      .lista-docs .meta { margin-left:auto; font-size:12px; color:${SUAVE}; }
+
+      /* ----- Login ----- */
+      .login { min-height:100vh; display:grid; place-items:center; padding:24px;
+        background:linear-gradient(180deg, ${TEAL_FUNDO} 0%, ${FUNDO} 45%); }
+      .login-caixa { background:${BRANCO}; border:1px solid ${LINHA}; border-radius:14px;
+        padding:36px 34px; width:400px; max-width:100%; box-shadow:0 10px 36px rgba(22,40,47,.07); }
+
+      /* ----- Celular ----- */
+      .btn-menu { display:none; background:${BRANCO}; border:1px solid ${LINHA}; color:${TEXTO};
+        width:38px; height:38px; border-radius:8px; font-size:16px; cursor:pointer; flex-shrink:0; }
+      .sombra-menu { display:none; position:fixed; inset:0; background:rgba(22,40,47,.3); z-index:70; }
+      @media (max-width: 880px) {
+        .lateral { position:fixed; left:0; top:0; z-index:75; transform:translateX(-100%);
+          transition:transform .22s ease; box-shadow:0 0 40px rgba(22,40,47,.18); }
+        .lateral.aberta { transform:translateX(0); }
+        .sombra-menu { display:block; }
+        .btn-menu { display:block; }
+        .topo { padding:14px 16px; }
+        .principal { padding:18px 16px 40px; }
+        .duas-colunas { grid-template-columns:1fr; }
+        .barra-acoes { flex-direction:column; align-items:stretch; }
+        .filtros > * { width:100% !important; }
+        .barra-acoes > input { width:100% !important; }
+        table { min-width:720px; }
+        .indicadores { grid-template-columns:1fr 1fr; gap:12px; }
+      }
+    `);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
